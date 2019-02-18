@@ -1,9 +1,10 @@
 const express = require("express");
-
-const task = require("./controllers/task");
-
 const router = express.Router();
 
-router.use("/task", task);
+router.get("/", (req, res) => {
+  res.send({
+    status: "working"
+  });
+});
 
 module.exports = router;
