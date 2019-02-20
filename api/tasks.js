@@ -7,6 +7,12 @@ router.get("/", (req, res) => {
   queries.getAll().then(tasks => res.send(tasks));
 });
 
+router.get("/:id", async (req, res) => {
+  const task = await queries.find(req.params.id);
+  if (!task) res.status(404).send({ error: "Task not found" });
+  res.send(task);
+});
+
 router.delete("/:id", async (req, res) => {
   const task = await queries.find(req.params.id);
   const rowsAffected = await queries.delete(req.params.id);

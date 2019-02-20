@@ -10,6 +10,8 @@ module.exports = {
       .delete();
   },
   find(id) {
-    return knex("task").where("id", id);
+    return knex("task")
+      .where("id", id)
+      .first();
   }
 };

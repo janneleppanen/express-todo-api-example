@@ -29,6 +29,26 @@ describe("Task endpoint", () => {
       });
   });
 
+  it("fetch task by id", async () => {
+    const response = await request(app)
+      .get("/api/v1/tasks/2")
+      .set("Accept", "application/json")
+      .expect("Content-Type", /json/)
+      .expect(200);
+
+    assert.deepEqual(response.body, fixtures.tasks[1]);
+  });
+
+  it("shows correct error when could't fetch a task", async () => {
+    const response = await request(app)
+      .get("/api/v1/tasks/10")
+      .set("Accept", "application/json")
+      .expect("Content-Type", /json/)
+      .expect(404);
+
+    assert.deepEqual(response.body, { error: "Task not found" });
+  });
+
   it("deletes a task", async () => {
     const task = await request(app)
       .delete("/api/v1/tasks/1")
