@@ -13,6 +13,16 @@ router.get("/:id", async (req, res) => {
   res.send(task);
 });
 
+router.post("/", async (req, res) => {
+  const { description } = req.body;
+  if (!description) {
+    res.send({ error: "Description not given" });
+  } else {
+    const task = await queries.create({ description });
+    res.send(task);
+  }
+});
+
 router.delete("/:id", async (req, res) => {
   const task = await queries.find(req.params.id);
   const rowsAffected = await queries.delete(req.params.id);

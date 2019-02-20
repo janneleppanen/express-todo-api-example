@@ -13,5 +13,8 @@ module.exports = {
     return knex("task")
       .where("id", id)
       .first();
+  },
+  create({ description }) {
+    return knex("task").insert({ description, done: false });
   }
 };

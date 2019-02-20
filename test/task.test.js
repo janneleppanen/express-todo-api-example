@@ -7,7 +7,7 @@ const app = require("../app");
 const fixtures = require("../test/fixtures");
 
 describe("Task endpoint", () => {
-  before(done => {
+  beforeEach(done => {
     knex.migrate
       .latest()
       .then(() => {
@@ -57,5 +57,30 @@ describe("Task endpoint", () => {
       .expect(200);
     const tasks = await knex.select().from("task");
     assert.equal(tasks.length, fixtures.tasks.length - 1);
+  });
+
+  it("creates a new task", async () => {
+    const response = await request(app)
+      .post("/api/v1/tasks")
+      .send({ description: "Create a new task" })
+      .set("Accept", "application/json")
+      .expect("Content-Type", /json/)
+      .expect(200);
+
+    const tasks = await knex("task");
+    assert.equal(tasks.length, fixtures.tasks.length + 1);
+  });
+
+  it("returns correct error when cannot create a new task", async () => {
+    const response = await request(app)
+      .post("/api/v1/tasks")
+      .send({ incorrect: "Create a new task" })
+      .set("Accept", "application/json")
+      .expect("Content-Type", /json/)
+      .expect(200);
+
+    expect(response.body).to.deep.equal({ error: "Description not given" });
+    const tasks = await knex("task");
+    assert.equal(tasks.length, fixtures.tasks.length);
   });
 });
