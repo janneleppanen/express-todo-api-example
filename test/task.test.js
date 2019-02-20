@@ -28,4 +28,14 @@ describe("Task endpoint", () => {
         done();
       });
   });
+
+  it("deletes a task", async () => {
+    const task = await request(app)
+      .delete("/api/v1/tasks/1")
+      .set("Accept", "application/json")
+      .expect("Content-Type", /json/)
+      .expect(200);
+    const tasks = await knex.select().from("task");
+    assert.equal(tasks.length, fixtures.tasks.length - 1);
+  });
 });
