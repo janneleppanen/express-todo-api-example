@@ -83,4 +83,22 @@ describe("Task endpoint", () => {
     const tasks = await knex("task");
     assert.equal(tasks.length, fixtures.tasks.length);
   });
+
+  it("updates a task", async () => {
+    const response = await request(app)
+      .put("/api/v1/tasks/1")
+      .send({ description: "Updated text", done: true })
+      .set("Accept", "application/json")
+      .expect("Content-Type", /json/)
+      .expect(200);
+
+    assert.equal(response.body.description, "Updated text");
+    assert.equal(response.body.done, true);
+
+    const task = await knex("task")
+      .where("id", 1)
+      .first();
+    assert.equal(task.description, "Updated text");
+    assert.equal(task.done, true);
+  });
 });

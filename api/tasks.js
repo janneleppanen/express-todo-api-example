@@ -34,4 +34,17 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+router.put("/:id", async (req, res) => {
+  const { id } = req.params;
+  const { description, done } = req.body;
+
+  try {
+    await queries.update(id, { description, done });
+    const task = await queries.find(id);
+    res.send(task);
+  } catch (e) {
+    res.send({ error: "Couldn't update a task" });
+  }
+});
+
 module.exports = router;
