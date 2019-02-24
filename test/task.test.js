@@ -1,6 +1,4 @@
 const request = require("supertest");
-const expect = require("chai").expect;
-const assert = require("chai").assert;
 
 const knex = require("../db/knex");
 const app = require("../app");
@@ -16,27 +14,27 @@ describe("Task endpoint", () => {
       .then(() => done());
   });
 
-  it("list all tasks", done => {
+  it("lists all tasks", done => {
     request(app)
       .get("/api/v1/tasks/")
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
       .expect(200)
       .then(response => {
-        expect(response.body).to.be.a("array");
-        assert.deepEqual(response.body, fixtures.tasks);
+        expect(Array.isArray(response.body)).toBe(true);
+        expect(response.body).toEqual(fixtures.tasks);
         done();
       });
   });
 
-  it("fetch task by id", async () => {
+  it("fetches task by id", async () => {
     const response = await request(app)
       .get("/api/v1/tasks/2")
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
       .expect(200);
 
-    assert.deepEqual(response.body, fixtures.tasks[1]);
+    expect(response.body).toEqual(fixtures.tasks[1]);
   });
 
   it("shows correct error when could't fetch a task", async () => {
@@ -46,7 +44,7 @@ describe("Task endpoint", () => {
       .expect("Content-Type", /json/)
       .expect(404);
 
-    assert.deepEqual(response.body, { error: "Task not found" });
+    expect(response.body).toEqual({ error: "Task not found" });
   });
 
   it("deletes a task", async () => {
@@ -56,7 +54,7 @@ describe("Task endpoint", () => {
       .expect("Content-Type", /json/)
       .expect(200);
     const tasks = await knex.select().from("task");
-    assert.equal(tasks.length, fixtures.tasks.length - 1);
+    expect(tasks.length).toBe(fixtures.tasks.length - 1);
   });
 
   it("creates a new task", async () => {
@@ -68,7 +66,7 @@ describe("Task endpoint", () => {
       .expect(200);
 
     const tasks = await knex("task");
-    assert.equal(tasks.length, fixtures.tasks.length + 1);
+    expect(tasks.length).toBe(fixtures.tasks.length + 1);
   });
 
   it("returns correct error when cannot create a new task", async () => {
@@ -79,9 +77,9 @@ describe("Task endpoint", () => {
       .expect("Content-Type", /json/)
       .expect(200);
 
-    expect(response.body).to.deep.equal({ error: "Description not given" });
+    expect(response.body).toEqual({ error: "Description not given" });
     const tasks = await knex("task");
-    assert.equal(tasks.length, fixtures.tasks.length);
+    expect(tasks.length).toBe(fixtures.tasks.length);
   });
 
   it("updates a task", async () => {
@@ -92,13 +90,13 @@ describe("Task endpoint", () => {
       .expect("Content-Type", /json/)
       .expect(200);
 
-    assert.equal(response.body.description, "Updated text");
-    assert.equal(response.body.done, true);
+    expect(response.body.description).toBe("Updated text");
+    expect(response.body.done).toEqual(1);
 
     const task = await knex("task")
       .where("id", 1)
       .first();
-    assert.equal(task.description, "Updated text");
-    assert.equal(task.done, true);
+    expect(task.description).toBe("Updated text");
+    expect(task.done).toBe(1);
   });
 });
